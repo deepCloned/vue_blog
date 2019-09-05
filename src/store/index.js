@@ -9,7 +9,8 @@ let token = localStorage.getItem('token')
 const state = {
   username: username || '',
   token: token || '',
-  isLogin: localStorage.getItem('username') != null
+  isLogin: localStorage.getItem('username') != null,
+  mySelectState: 'my'
 }
 
 const mutations = {
@@ -21,6 +22,9 @@ const mutations = {
   },
   changeUsername (state, username) {
     state.username = username
+  },
+  changeMySelectState (state, type) {
+    state.mySelectState = type
   }
 }
 

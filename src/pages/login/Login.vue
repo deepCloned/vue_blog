@@ -65,7 +65,7 @@ export default {
       account: '',
       password: '',
       accountError: '用户名 / 邮箱不符合规范',
-      passwordError: '密码不符合规范',
+      passwordError: '密码至少包含数字、字母、符号中的两种',
       accountChecked: true,
       passwordChecked: true,
       cancelBlock: false

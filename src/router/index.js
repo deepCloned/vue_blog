@@ -28,8 +28,24 @@ export default new Router({
     },
     {
       path: '/my',
-      name: 'My',
-      component: () => import(/* webpackChunkName: "My" */'@/pages/my/My')
+      // name: 'My',
+      component: () => import(/* webpackChunkName: "My" */'@/pages/my/My'),
+      children: [
+        // {
+        //   path: '/',
+        //   component: () => import(/* webpackChunkName: "My" */'@/pages/my/My')
+        // },
+        {
+          path: 'write',
+          name: 'Write',
+          component: () => import(/* webpackChunkName: "Write" */'@/pages/my/components/Write')
+        },
+        {
+          path: 'collection',
+          name: 'Collection',
+          component: () => import(/* webpackChunkName: "Collection" */'@/pages/my/components/Collection')
+        }
+      ]
     },
     {
       path: '/new',

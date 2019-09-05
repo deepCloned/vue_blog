@@ -20,7 +20,7 @@
         <span class="iconfont">&#xe6e6;</span>
         <span>博客</span>
       </router-link>
-      <router-link tag="li" class="item" to="/my">
+      <router-link tag="li" class="item" to="/my/write">
         <span class="iconfont">&#xe602;</span>
         <span>我的</span>
       </router-link>

@@ -25,30 +25,26 @@ For a detailed explanation on how things work, check out the [guide](http://vuej
 >Authorization:Basic base64(account:password)
 
 
-# 安装依赖
-## dependencies
+## 安装依赖
+### dependencies
 * axios
 * element-ui
 * base64
 * vue
 * vue-router
 
-## devDependencies
+### devDependencies
 * babel-plugin-component -- 按需引入element-ui 组件
-
-## 如何引入bootstrap
-* npm install bootstrap@3
-* npm install jquery
 
 >配置文件：build > webpack.base.conf.js > 
 
 
-## 使用本地图片资源列表渲染时，要放在static目录下
-## 为路由添加transition动画界面抖动处理： transition标签添加mode先进后出或者先出后进
-## v-html 识别\n \s
-## 如何使用vuex 安装 -- 建立store -- main.js配置引入使用
+### 使用本地图片资源列表渲染时，要放在static目录下
+### 为路由添加transition动画界面抖动处理： transition标签添加mode先进后出或者先出后进
+### v-html 识别\n \s
+### 如何使用vuex 安装 -- 建立store -- main.js配置引入使用
 
-# 页面
+## 页面
 * 首页 -- /
 * 注册 -- /register
 * 登录 -- /login

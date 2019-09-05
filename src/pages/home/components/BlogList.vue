@@ -26,6 +26,7 @@
         <input v-model="keyword" type="text" placeholder="请输入关键词">
         <div class="btn">
           <transition
+            mode="out-in"
             :duration="500"
             enter-active-class="animated fadeIn"
             leave-active-class="animated fadeOut"
@@ -45,7 +46,8 @@
     </header>
     <ul v-if="blogList.length > 0" class="list-wrap">
       <transition-group
-        :duration="1000"
+        mode="out-in"
+        :duration="500"
         enter-active-class="animated fadeIn ease-in-out"
         leave-active-class="animated fadeOut ease-in-out"
       >
