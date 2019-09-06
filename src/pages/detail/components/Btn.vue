@@ -8,7 +8,7 @@
       >
         <span class="iconfont common">&#xe608;</span>
       </li>
-      <li @click="getLikeOrNot" class="item">
+      <li @click="throttledLikeOrNot" class="item">
         <span v-if="isLike" class="iconfont common like">&#xe60b;</span>
         <span v-else class="iconfont common">&#xe68f;</span>
       </li>
@@ -47,33 +47,43 @@ export default {
   },
   methods: {
     getLikeOrNot () {
-      const blogId = this.$route.params.id
-      if (!this.username) {
-        this.$message({
-          message: '您还没有登录，无法执行相关操作',
-          type: 'error'
-        })
-        return
-      }
-      if (CommentValidator.checkId(blogId)) {
-        if (!this.isLike) {
-          this.postAxios('v1/blog/like', {
-            blogId
+      let lock = false
+      if (!lock) {
+        const id = this.$route.params.id
+        if (!this.username) {
+          this.$message({
+            message: '您还没有登录，无法执行相关操作',
+            type: 'error'
           })
-            .then(res => {
-              this.isLike = true
-            })
+          return
         }
-        if (this.isLike) {
-          this.postAxios('v1/blog/like/cancel', {
-            blogId
-          })
-            .then(res => {
-              this.isLike = false
+        if (CommentValidator.checkId(id)) {
+          if (!this.isLike) {
+            lock = true
+            this.postAxios('v1/blog/like', {
+              id
             })
+              .then(res => {
+                this.isLike = true
+                lock = false
+              })
+          }
+          if (this.isLike) {
+            lock = true
+            this.postAxios('v1/blog/like/cancel', {
+              id
+            })
+              .then(res => {
+                this.isLike = false
+                lock = false
+              })
+          }
         }
       }
     },
+    throttledLikeOrNot: throttle(function () {
+      this.getLikeOrNot()
+    }, 500),
     getScroll () {
       let scrollT = this._getScrollTop()
       if (scrollT > 0) {
