@@ -68,7 +68,7 @@ export default {
       if (!this.username) {
         this.$message({
           message: '您还没有登录，无法获取相关数据',
-          type: 'error'
+          type: 'info'
         })
         return
       }

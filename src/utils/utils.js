@@ -1,5 +1,5 @@
 const formateDate = function () {
-  const arr = []
+  let arr = []
   const date = new Date()
   const year = date.getFullYear()
   var month = date.getMonth() + 1
@@ -24,19 +24,34 @@ const formateContent = function (content) {
   return content.replace(reg, '\n\n')
 }
 
-const throttle = function (fn, delay = 100) {
+// 防抖
+const debounce = function (fn, delay = 1000) {
   let timer = null
   return function () {
-    if (timer) return
-    timer = setTimeout(() => {
-      fn.apply(this, arguments)
-      timer = null
+    clearInterval(timer)
+    const self = this
+    let args = arguments
+    timer = setTimeout(function () {
+      fn.apply(self, args)
     }, delay)
+  }
+}
+
+// 节流
+const throttle = function (fn, wait = 100) {
+  let lastTime = 0
+  return function () {
+    let curTime = +new Date()
+    if (curTime - lastTime > wait) {
+      fn.apply(this, arguments)
+      lastTime = curTime
+    }
   }
 }
 
 export {
   formateDate,
   formateContent,
-  throttle
+  throttle,
+  debounce
 }

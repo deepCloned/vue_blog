@@ -5,7 +5,7 @@
       <li class="item username">
         <span class="iconfont">&#xe631;</span>
         <input
-          @change="validateAccount"
+          @input="debouncedAccount"
           v-model="account"
           type="text"
           placeholder="请输入用户名 / 邮箱"
@@ -28,7 +28,7 @@
       <li class="item password">
         <span class="iconfont">&#xe654;</span>
         <input
-          @change="validatePassword"
+          @input="debouncedPassword"
           v-model="password"
           type="password"
           placeholder="请输入密码"
@@ -49,12 +49,13 @@
         <p v-show="!passwordChecked" class="error-message">{{ passwordError }}</p>
       </li>
     </ul>
-    <div @click="getLogin" class="submit">登录</div>
+    <div @click="throttledLogin" class="submit">登录</div>
   </section>
 </template>
 
 <script>
 import { RegisterValidator } from '../../model/validator'
+import { debounce, throttle } from '../../utils/utils'
 import axios from 'axios'
 import { configs } from '../../api/config'
 import { mapState, mapMutations } from 'vuex'
@@ -77,6 +78,9 @@ export default {
       'username',
       'token'
     ]),
+    isNotEmpty () {
+      return this.account && this.password
+    },
     isChecked () {
       return this.accountChecked && this.passwordChecked
     }
@@ -89,9 +93,11 @@ export default {
     ]),
     clearAccountValue () {
       this.account = ''
+      this.accountChecked = true
     },
     clearPasswordValue () {
       this.password = ''
+      this.passwordChecked = true
     },
     /**
      * 验证输入的合法性
@@ -103,45 +109,61 @@ export default {
       this.passwordChecked = RegisterValidator.checkPassword(this.password)
     },
     getLogin () {
-      const type = RegisterValidator.getType(this.account)
-      const CancelToken = axios.CancelToken
-      const source = CancelToken.source()
-      axios({
-        url: configs.baseUrl + 'v1/token',
-        method: 'POST',
-        data: {
-          account: this.account,
-          password: this.password,
-          type: type
-        }
-      }, {
-        cancelToken: source.token
-      })
-        .then(res => {
-          this.$message({
-            message: '登录成功',
-            type: 'success'
-          })
-          let token = res.data.token
-          let username = res.data.username
-          /**
-           * 登录成功，用户名和token写入缓存和vuex中
-           */
-          localStorage.setItem('username', username)
-          localStorage.setItem('token', token)
-          this.changeToken(token)
-          this.changeUsername(username)
-          this.changeLoginState(true)
-          this.$router.push({name: 'Home'})
+      if (this.isNotEmpty && this.isChecked) {
+        const type = RegisterValidator.getType(this.account)
+        const CancelToken = axios.CancelToken
+        const source = CancelToken.source()
+        axios({
+          url: configs.baseUrl + 'v1/token',
+          method: 'POST',
+          data: {
+            account: this.account,
+            password: this.password,
+            type: type
+          }
+        }, {
+          cancelToken: source.token
         })
-        .catch((err) => {
-          this.$message({
-            message: err.response.data.message,
-            type: 'error'
+          .then(res => {
+            this.$message({
+              message: '登录成功',
+              type: 'success'
+            })
+            let token = res.data.token
+            let username = res.data.username
+            /**
+             * 登录成功，用户名和token写入缓存和vuex中
+             */
+            localStorage.setItem('username', username)
+            localStorage.setItem('token', token)
+            this.changeToken(token)
+            this.changeUsername(username)
+            this.changeLoginState(true)
+            this.$router.push({name: 'Home'})
           })
+          .catch((err) => {
+            this.$message({
+              message: err.response.data.message,
+              type: 'error'
+            })
+          })
+        source.cancel()
+      } else {
+        this.$message({
+          type: 'info',
+          message: '请把相关信息填写完整'
         })
-      source.cancel()
-    }
+      }
+    },
+    debouncedAccount: debounce(function () {
+      this.validateAccount()
+    }),
+    debouncedPassword: debounce(function () {
+      this.validatePassword()
+    }),
+    throttledLogin: throttle(function () {
+      this.getLogin()
+    }, 1000)
   }
 }
 </script>

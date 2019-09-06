@@ -7,22 +7,20 @@
     </header>
     <div class="list-wrap">
       <ul class="nav">
-        <router-link
-          to="/my/write"
-          tag="li"
+        <li
+          @click="toWrite"
           class="item"
           :class="[ mySelectState === 'my' ? 'active' : '' ]"
         >
           <span>我写的文章</span>
-        </router-link>
-        <router-link
-          to="/my/collection"
-          tag="li"
+        </li>
+        <li
+          @click="toCllection"
           class="item"
           :class="[ mySelectState === 'like' ? 'active' : '' ]"
         >
           <span>我喜欢的文章</span>
-        </router-link>
+        </li>
       </ul>
       <transition
         :duration="300"
@@ -38,6 +36,7 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
+import { throttle } from '../../../utils/utils'
 export default {
   name: 'About',
   data () {
@@ -54,7 +53,13 @@ export default {
   methods: {
     ...mapMutations([
       'changeMySelectState'
-    ])
+    ]),
+    toWrite: throttle(function () {
+      this.$router.push('/my/write')
+    }, 1000),
+    toCllection: throttle(function () {
+      this.$router.push('/my/collection')
+    }, 1000)
   }
 }
 </script>

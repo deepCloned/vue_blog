@@ -5,7 +5,7 @@
       <li class="item username">
         <span class="iconfont">&#xe631;</span>
         <input
-          @input="validateUsername"
+          @input="debouncedUsername"
           v-model="username"
           type="text"
           placeholder="请输入用户名"
@@ -28,7 +28,7 @@
       <li class="item email">
         <span class="iconfont">&#xe8c9;</span>
         <input
-          @input="validateEmail"
+          @input="debouncedEmail"
           v-model="email"
           type="text"
           placeholder="请输入邮箱"
@@ -51,7 +51,7 @@
       <li class="item password">
         <span class="iconfont">&#xe654;</span>
         <input
-          @input="validatePassword"
+          @input="debouncedPassword"
           v-model="password"
           type="password"
           placeholder="请输入密码"
@@ -74,7 +74,7 @@
       <li class="item confirmPassword">
         <span class="iconfont">&#xe654;</span>
         <input
-          @input="validateCPassword"
+          @input="debouncedCPassword"
           v-model="confirmPassword"
           type="password"
           placeholder="确认密码"
@@ -95,12 +95,13 @@
         <p v-show="!cPasswordChecked" class="error-message">{{ cPasswordError }}</p>
       </li>
     </ul>
-    <div @click="getRegister" class="submit">注册</div>
+    <div @click="throttledRegister" class="submit">注册</div>
   </section>
 </template>
 
 <script>
 import { RegisterValidator } from '../../model/validator.js'
+import { debounce, throttle } from '../../utils/utils'
 export default {
   name: 'Register',
   data () {
@@ -123,20 +124,30 @@ export default {
   computed: {
     isChecked () {
       return this.usernameChecked && this.emailChecked && this.passwordChecked && this.cPasswordChecked
+    },
+    isNotEmpty () {
+      return this.username && this.email && this.password && this.confirmPassword
     }
   },
   methods: {
+    /**
+     * 清空输入框
+     */
     clearUsernameValue () {
       this.username = ''
+      this.usernameChecked = true
     },
     clearEmailValue () {
       this.email = ''
+      this.emailChecked = true
     },
     clearPasswordValue () {
       this.password = ''
+      this.passwordChecked = true
     },
     clearConfirmPasswordValue () {
       this.confirmPassword = ''
+      this.cPasswordChecked = true
     },
     /**
      * 验证输入参数
@@ -159,24 +170,46 @@ export default {
     },
     getRegister () {
       // 发送请求之前验证
-      if (this.isChecked) {
-        this.postAxios('v1/user/register', {
-          username: this.username,
-          email: this.email,
-          password: this.password,
-          confirmPassword: this.confirmPassword
-        })
-          .then(res => {
-            if (res.status === 200 && res.data.errorCode === 0) {
-              this.$message({
-                message: res.data.message,
-                type: 'success'
-              })
-              this.$router.push({name: 'Login'})
-            }
+      if (this.isNotEmpty) {
+        if (this.isChecked) {
+          this.postAxios('v1/user/register', {
+            username: this.username,
+            email: this.email,
+            password: this.password,
+            confirmPassword: this.confirmPassword
           })
+            .then(res => {
+              if (res.status === 200 && res.data.errorCode === 0) {
+                this.$message({
+                  message: res.data.message,
+                  type: 'success'
+                })
+                this.$router.push({name: 'Login'})
+              }
+            })
+        }
+      } else {
+        this.$message({
+          type: 'info',
+          message: '请把相关信息填写完整'
+        })
       }
-    }
+    },
+    debouncedUsername: debounce(function () {
+      this.validateUsername()
+    }),
+    debouncedEmail: debounce(function () {
+      this.validateEmail()
+    }),
+    debouncedPassword: debounce(function () {
+      this.validatePassword()
+    }),
+    debouncedCPassword: debounce(function () {
+      this.validateCPassword()
+    }),
+    throttledRegister: throttle(function () {
+      this.getRegister()
+    }, 1000)
   }
 }
 </script>

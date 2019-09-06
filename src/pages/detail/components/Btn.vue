@@ -99,10 +99,10 @@ export default {
     }
   },
   created () {
-    window.addEventListener('scroll', throttle(this.getScroll))
+    window.addEventListener('scroll', throttle(this.getScroll, 100))
   },
   deactivated () {
-    window.removeEventListener('scroll', throttle(this.getScroll))
+    window.removeEventListener('scroll', throttle(this.getScroll, 100))
   }
 }
 </script>
@@ -110,7 +110,7 @@ export default {
 <style lang="scss" scoped>
   .btn{
     position: fixed;
-    top: 500px;
+    top: 550px;
     right: 200px;
     .container{
       .item{

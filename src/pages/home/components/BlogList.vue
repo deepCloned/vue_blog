@@ -39,8 +39,8 @@
               &#xe621;
             </span>
           </transition>
-          <span @click="confirmSearch" class="iconfont search-icon">&#xe606;</span>
-          <span @click="confirmSearch" class="search">搜索</span>
+          <span @click="throttledSearch" class="iconfont search-icon">&#xe606;</span>
+          <span @click="throttledSearch" class="search">搜索</span>
         </div>
       </nav>
     </header>
@@ -87,6 +87,7 @@
 </template>
 
 <script>
+import { throttle } from '../../../utils/utils'
 export default {
   name: 'BlogList',
   data () {
@@ -118,7 +119,7 @@ export default {
       if (!keyword) {
         this.$message({
           message: '搜索关键词不能为空',
-          type: 'error'
+          type: 'info'
         })
         return
       }
@@ -134,7 +135,11 @@ export default {
           this.keyword = ''
           this.$emit('getSearchBlog', res.data)
         })
-    }
+    },
+    // 添加搜索节流功能
+    throttledSearch: throttle(function () {
+      this.confirmSearch()
+    }, 1000)
   }
 }
 </script>
