@@ -27,7 +27,7 @@ import Loading from '../public/Loading'
 import { Base64 } from 'js-base64'
 import { mapMutations } from 'vuex'
 import axios from 'axios'
-import { configs } from '../../api/config.js'
+import { configs } from '../../api/config'
 export default {
   name: 'Home',
   data () {
@@ -78,7 +78,7 @@ export default {
     verifyToken () {
       const token = this._encodeToken()
       axios.get(configs.baseUrl + 'v1/token/verify', {
-        heades: {
+        headers: {
           'Authorization': token
         }
       })

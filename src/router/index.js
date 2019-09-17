@@ -51,6 +51,11 @@ export default new Router({
       path: '/new',
       name: 'AddBlog',
       component: () => import(/* webpackChunkName: "AddBlog" */'@/pages/addBlog/AddBlog')
+    },
+    {
+      path: '*',
+      name: 'NotFound',
+      component: () => import(/* webpackChunkName: "NotFound" */'@/pages/notFound/NotFound')
     }
   ],
   scrollBehavior (to, from, savedPosition) {
